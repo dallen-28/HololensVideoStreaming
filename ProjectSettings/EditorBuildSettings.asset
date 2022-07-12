@@ -8,6 +8,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/VirtualDisplayScene.unity
     guid: 1bd469484d7418c4ab7c0e679cccf2c6
+  - enabled: 0
+    path: Assets/Scenes/SampleScene.unity
+    guid: 9fc0d4010bbf28b4594072e72b8655ab
   m_configObjects:
     Unity.XR.WindowsMR.Settings: {fileID: 11400000, guid: 5ec5e3a8c6454714e9125d8c6d1aaa6b, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: d7e5291cc48abb943bf651a9f6407d41, type: 2}

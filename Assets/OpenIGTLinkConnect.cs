@@ -18,7 +18,13 @@ public class OpenIGTLinkConnect : MonoBehaviour
     public string ipString = "127.0.0.1";
     public int port = 18944;
     public GameObject[] GameObjects;
+    public GameObject virtualDisplay;
+    private int width;
+    private int height;
+    private int packetSize;
     public int msDelay = 33;
+
+    private int maxBytes = 0;
 
     private float totalTime = 0f;
 
@@ -33,9 +39,7 @@ public class OpenIGTLinkConnect : MonoBehaviour
     private IPEndPoint remoteEP;
 
     // ManualResetEvent instances signal completion.
-    private static ManualResetEvent connectDone = new ManualResetEvent(false);
     private static ManualResetEvent sendDone = new ManualResetEvent(false);
-    private static ManualResetEvent receiveDone = new ManualResetEvent(false);
 
     // Receive transform queue
     public readonly static Queue<Action> ReceiveTransformQueue = new Queue<Action>();
@@ -43,11 +47,22 @@ public class OpenIGTLinkConnect : MonoBehaviour
     // Receive image queue
     public readonly static Queue<Action> ReceiveVideoQueue = new Queue<Action>();
 
+    // Frame data queue
+    public static Queue<byte[]> byteQueue = new Queue<byte[]>();
+
     private bool connectionStarted = false;
+
+    private MeshRenderer virtualDisplayRenderer;
 
     // Use this for initialization
     void Start()
     {
+        virtualDisplayRenderer = this.virtualDisplay.GetComponent<MeshRenderer>();
+
+        // Uses editor values if none set in config file
+        width = virtualDisplay.GetComponent<ScreenResolution>().width;
+        height = virtualDisplay.GetComponent<ScreenResolution>().height;
+
         // Initialize CRC Generator
         crcGenerator = new CRC64();
 
@@ -64,16 +79,51 @@ public class OpenIGTLinkConnect : MonoBehaviour
 
         crcGenerator.Init(crcPolynomial);
 
-        // Load settings from file
-        FileInfo iniFile = new FileInfo("config.txt");
-        StreamReader reader = iniFile.OpenText();
-        string text = reader.ReadLine();
-        if (text != null) ipString = text;
+        try
+        {
+            // Load settings from file
+            // Format of Config file is:
+            // IPAddress
+            // Port
+            // Image Width
+            // Image Height
 
-        text = reader.ReadLine();
-        if (text != null) port = int.Parse(text);
+            string path = "config.txt";
 
+            // Uncomment line below for deploying to Hololens
+            //string path = Path.Combine(Application.persistentDataPath, "config.txt");
+
+
+            //FileInfo iniFile = new FileInfo("config.txt");
+            FileInfo iniFile = new FileInfo(path);
+            StreamReader reader = iniFile.OpenText();
+            string ipStringText = reader.ReadLine();
+            string portText = reader.ReadLine();
+            string widthText = reader.ReadLine();
+            string heightText = reader.ReadLine();
+
+            if (ipStringText != string.Empty && ipStringText != null)
+                ipString = ipStringText;
+            if (portText != string.Empty && portText != null)
+                port = int.Parse(portText);
+            if (widthText != string.Empty && widthText != null)
+                width = int.Parse(widthText);
+            if (heightText != string.Empty && heightText != null)
+                height = int.Parse(heightText);
+
+            virtualDisplay.GetComponent<ScreenResolution>().UpdateAspectRatio(width, height);
+        }
+        catch(Exception e)
+        {
+            Debug.Log(String.Format("Exception : {0}", e.ToString()));
+        }
+    
+        
         // TODO: Connect on prompt rather than application start
+        //StartupClient();
+    }
+    public void OnConnect()
+    { 
         StartupClient();
     }
 
@@ -96,7 +146,7 @@ public class OpenIGTLinkConnect : MonoBehaviour
                 socket.BeginConnect(remoteEP, new AsyncCallback(ConnectCallback), socket);
                 connectionStarted = true;
 
-                StartCoroutine(Receive());
+                Receive(socket);
                 Debug.Log(String.Format("Ready to receive data"));
             }
             catch (Exception e)
@@ -123,7 +173,7 @@ public class OpenIGTLinkConnect : MonoBehaviour
             Debug.Log(String.Format("Socket connected"));
 
             // Signal that the connection has been made.
-            connectDone.Set();
+            //connectDone.Set();
         }
         catch (Exception e)
         {
@@ -135,8 +185,8 @@ public class OpenIGTLinkConnect : MonoBehaviour
     void Update()
     {
         // Repeat every msDelay millisecond
-        if (totalTime * 1000 > msDelay)
-        {
+        //if (totalTime * 1000 > msDelay)
+        //{
             if (connectionStarted)
             {
                 // Send Transform Data if Flag is on
@@ -152,8 +202,7 @@ public class OpenIGTLinkConnect : MonoBehaviour
                         SendPointMessage(gameObject.transform);
                     }
                 }
-
-                // Perform all queued Receive Transforms
+                // Perform all queued Receive Transforms and Images
                 while (ReceiveTransformQueue.Count > 0)
                 {
                     ReceiveTransformQueue.Dequeue().Invoke();
@@ -164,9 +213,9 @@ public class OpenIGTLinkConnect : MonoBehaviour
                 }
             }
             // Reset timer
-            totalTime = 0f;
-        }
-        totalTime = totalTime + Time.deltaTime;
+            //totalTime = 0f;
+        //}
+        //totalTime = totalTime + Time.deltaTime;
     }
 
     void OnApplicationQuit()
@@ -174,22 +223,6 @@ public class OpenIGTLinkConnect : MonoBehaviour
         // Release the socket.
         socket.Shutdown(SocketShutdown.Both);
         socket.Close();
-    }
-
-    IEnumerator Receive()
-    {
-        while (true)
-        {
-            //Should execute only once every frame, but add additional delay if neccessary
-            //yield return new WaitForSeconds(1.0f);
-            yield return null;
-
-
-            if (socket.Poll(0, SelectMode.SelectRead))
-            {
-                Receive(socket);
-            }
-        }
     }
 
     // -------------------- Receive -------------------- 
@@ -200,6 +233,7 @@ public class OpenIGTLinkConnect : MonoBehaviour
             // Create the state object.
             StateObject state = new StateObject();
             state.workSocket = client;
+            //Debug.Log("Created New State Object with Thread: " + Thread.CurrentThread.ManagedThreadId.ToString());
 
             // Begin receiving the data from the remote device.
             ReceiveStart(state);
@@ -212,6 +246,7 @@ public class OpenIGTLinkConnect : MonoBehaviour
 
     private void ReceiveStart(StateObject state)
     {
+        //Debug.Log("Receive Start called with Thread: " + Thread.CurrentThread.ManagedThreadId.ToString());
         Socket client = state.workSocket;
         client.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(ReceiveCallback), state);
     }
@@ -227,15 +262,16 @@ public class OpenIGTLinkConnect : MonoBehaviour
 
             // Read data from the remote device.
             int bytesRead = client.EndReceive(ar);
-
-            //Debug.Log(bytesRead);
+            Debug.Log("Bytes Read: " + bytesRead);
 
             // As far as I can tell, Unity will not let the callback occur with 0 bytes to read, so I cannot use a 0 bytes left method to determine ending, must read the data type and size from the Header
             // TODO: Current workaround: adding check for a full buffer of transforms (divisible by 106), this may fail with other data types, must make overflow buffer work as well
-            //if ((bytesRead > 0) & (bytesRead % 106 == 0))
-            if ((bytesRead > 0) & (bytesRead % 921730 == 0))
-            //if ((bytesRead > 0) & (bytesRead % 3120130 == 0))
+            // Update: Overflow buffer fix: 
+            // Recursively call client BeginReceive from callback function to avoid race condition caused from BeginReceive being called in main update thread
+            // Could reinvestigate using manualresetevent to potentially increase performance but most likely server side would need to be optimized
+            if (bytesRead > 0)
             {
+
                 // There might be more data, so store the data received so far.
                 byte[] readBytes = new Byte[bytesRead];
                 Array.Copy(state.buffer, readBytes, bytesRead);
@@ -243,11 +279,12 @@ public class OpenIGTLinkConnect : MonoBehaviour
                 bool moreToRead = true;
 
                 state.totalBytesRead += bytesRead;
+                Debug.Log("Total Bytes Read: " + state.totalBytesRead);
 
                 while (moreToRead)
                 {
                     // Read the header and determine data type
-                    if (!state.headerRead & state.byteList.Count > 0)
+                    if (!state.headerRead && state.byteList.Count > 0)
                     {
                         string dataType = Encoding.ASCII.GetString(state.byteList.GetRange(2, 12).ToArray()).Replace("\0", string.Empty);
                         state.name = Encoding.ASCII.GetString(state.byteList.GetRange(14, 20).ToArray()).Replace("\0", string.Empty);
@@ -259,7 +296,7 @@ public class OpenIGTLinkConnect : MonoBehaviour
                         }
                         state.dataSize = BitConverter.ToInt32(dataSizeBytes, 0) + 58;
 
-                        //Debug.Log(String.Format("Data is of type {0} with name {1} and size {2}", dataType, state.name, state.dataSize));
+                        Debug.Log(String.Format("Data is of type {0} with name {1} and size {2} with thread {3}", dataType, state.name, state.dataSize, Thread.CurrentThread.ManagedThreadId.ToString()));
 
                         if (dataType.Equals("IMAGE"))
                         {
@@ -269,51 +306,64 @@ public class OpenIGTLinkConnect : MonoBehaviour
                         {
                             state.dataType = StateObject.DataTypes.TRANSFORM;
                         }
+                        else if (dataType.Equals("STATUS"))
+                        {
+                            Debug.Log("Status");
+                            state.dataType = StateObject.DataTypes.STATUS;
+                        }
                         else
                         {
-                            moreToRead = false;
-                            receiveDone.Set();
-                            return;
+                            throw new Exception("Data is out of sync, please reconnect");
                         }
                         state.headerRead = true;
+
                     }
 
-                    if (state.totalBytesRead == state.dataSize)
+                    else if (state.totalBytesRead == state.dataSize)
                     {
+                        Debug.Log("Exact Amount of data");
+
                         // All the data has arrived; put it in response.
                         if (state.byteList.Count > 1)
                         {
                             // Send off to interpret data based on data type
                             if (state.dataType == StateObject.DataTypes.TRANSFORM)
                             {
-                                OpenIGTLinkConnect.ReceiveTransformQueue.Enqueue(() =>
+                                ReceiveTransformQueue.Enqueue(() =>
                                 {
                                     StartCoroutine(ReceiveTransformMessage(state.byteList.ToArray(), state.name));
                                 });
                             }
                             else if (state.dataType == StateObject.DataTypes.IMAGE)
                             {
-                                OpenIGTLinkConnect.ReceiveVideoQueue.Enqueue(() =>
+                                // Create parallel image data queue 
+                                byteQueue.Enqueue(state.byteList.ToArray());
+            
+                                ReceiveVideoQueue.Enqueue(() =>
                                 {
-                                    StartCoroutine(ReceiveVideoMessage(state.byteList.ToArray(), state.name));
+                                    // Previous CoRoutine call would sometimes fail as no copy of the state data was made
+                                    // Fix: Create image data queue to keep copy of the image corresponding to action queue
+                                    StartCoroutine(ReceiveVideoMessage(byteQueue.Dequeue(), state.name));
                                 });
                             }
+                            // Status handling
                         }
                         // Signal that all bytes have been received.
                         moreToRead = false;
-                        receiveDone.Set();
+                        Receive(client);
                     }
-                    else if ((state.totalBytesRead > state.dataSize) & (state.byteList.Count > state.dataSize) & state.dataSize > 0)
+                    else if ((state.totalBytesRead > state.dataSize) && (state.byteList.Count > state.dataSize) && (state.dataSize > 0))
                     {
+                        Debug.Log("Overflow");
+
                         // More data than expected has arrived; put it in response and repeat.
                         // Send off to interpret data based on data type
                         if (state.dataType == StateObject.DataTypes.TRANSFORM)
                         {
-                            OpenIGTLinkConnect.ReceiveTransformQueue.Enqueue(() =>
+                            ReceiveTransformQueue.Enqueue(() =>
                             {
                                 try
                                 {
-                                    //Debug.Log(state.dataSize);
                                     StartCoroutine(ReceiveTransformMessage(state.byteList.GetRange(0, state.dataSize).ToArray(), state.name));
                                 }
                                 catch (Exception e)
@@ -324,13 +374,15 @@ public class OpenIGTLinkConnect : MonoBehaviour
                             });
                         }
                         else if (state.dataType == StateObject.DataTypes.IMAGE)
-                        {
-                            OpenIGTLinkConnect.ReceiveVideoQueue.Enqueue(() =>
+                        {       
+                            // Enqueue parallel image queue 
+                            byteQueue.Enqueue(state.byteList.GetRange(0, state.dataSize).ToArray());
+
+                            ReceiveVideoQueue.Enqueue(() =>
                             {
                                 try
-                                {
-                                    //Debug.Log(state.dataSize);
-                                    StartCoroutine(ReceiveVideoMessage(state.byteList.GetRange(0, state.dataSize).ToArray(), state.name));
+                                {                                   
+                                    StartCoroutine(ReceiveVideoMessage(byteQueue.Dequeue(), state.name));
                                 }
                                 catch (Exception e)
                                 {
@@ -344,6 +396,7 @@ public class OpenIGTLinkConnect : MonoBehaviour
                         state.dataSize = 0;
                         state.name = "";
                         state.headerRead = false;
+ 
                     }
                     else
                     {
@@ -355,62 +408,38 @@ public class OpenIGTLinkConnect : MonoBehaviour
             }
             else
             {
-                receiveDone.Set();
+                Debug.Log("Bytes less than zero");
             }
         }
         catch (Exception e)
         {
-            receiveDone.Set();
-            Debug.Log(String.Format(e.ToString()));
+            Debug.Log("Overflow Bug");
+            Debug.Log(string.Format(e.ToString()));
+            // Release the socket.
+            socket.Shutdown(SocketShutdown.Both);
+            socket.Close();
+
+            // Attempt to Restart
+            StartupClient();
         }
     }
+
     IEnumerator ReceiveVideoMessage(byte[] data, string imageName)
     {
 
-        // To Do: Dynamically set aspect ratio of virtual display based on image size (might break resizing functionality?)
-
-        string a = Encoding.ASCII.GetString(data);
-        int c = a.Length;
-        int b = 1;
+        //Debug.Log("Receive Video");
+    
         yield return null;
-        GameObject virtualDisplay = GameObject.Find("VirtualDisplay");
-        MeshRenderer meshRenderer = virtualDisplay.GetComponent<MeshRenderer>();
-        //Texture2D myTexture = new Texture2D (640, 480, TextureFormat.RGB24, false);
 
-        /*if (BitConverter.IsLittleEndian)
-        {
-            Array.Reverse(data);w
-        }*/
-
-        // Test for 2 x 2 Image 
-        /*var tex = new Texture2D(2, 2, TextureFormat.RGB24, true);
-        var testData = new byte[]
-        {
-                255, 0,0,
-                0,255,0,
-                0,0,255,
-                255,235,4,
-                0,255,255,
-                255,255,255
-        };*/
-
-        // Plus optical marker tracking config file - Image size 640 x 480
+        // Plus MMF Video config file - Image size 640 x 480
         // Packet size of 921730 bytes = 130 bytes header + 921600 (640 * 480 * 3 (1 byte for R, 1 for G, 1 for B)) bytes image
-        
-        // Logitech Webcam Video Stream Resolution
-        var tex = new Texture2D(640, 480, TextureFormat.RGB24, false);
 
-        // Epiphan Video Capture Canon US
-        //var tex = new Texture2D(1300, 800, TextureFormat.RGB24, false);
-
-
+        var tex = new Texture2D(this.width, this.height, TextureFormat.RGB24, false);
         tex.SetPixelData(data, 0, 130);
-        //tex2.filterMode = FilterMode.Bilinear;
-        //tex2.filterMode = FilterMode.Point;
 
         // Doesn't work if set to true
         tex.Apply(updateMipmaps: false);
-        meshRenderer.material.mainTexture = tex;
+        this.virtualDisplayRenderer.material.mainTexture = tex;
 
     }
 
@@ -759,13 +788,15 @@ public class StateObject
     public Socket workSocket = null;
     // Size of receive buffer.
     public const int BufferSize = 4194304;
+    //public const int BufferSize = 1024;
+    
     // Receive buffer.
     public byte[] buffer = new byte[BufferSize];
     // Received data string.
     //public StringBuilder sb = new StringBuilder();
     public List<Byte> byteList = new List<Byte>();
     // OpenIGTLink Data Type
-    public enum DataTypes { IMAGE = 0, TRANSFORM };
+    public enum DataTypes { IMAGE = 0, TRANSFORM, STATUS };
     public DataTypes dataType;
     // Header read or not
     public bool headerRead = false;

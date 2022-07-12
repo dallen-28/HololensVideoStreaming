@@ -22,8 +22,10 @@ public class UpdateCTSlice : MonoBehaviour
         this.meshRenderer = this.GetComponent<MeshRenderer>();
 
         string folderPath = string.Concat("Textures/", view, "CTSlices");
+        
 
         Object[] textures = Resources.LoadAll(folderPath, typeof(Texture2D));
+        //Object[] textures = Resources.LoadAll(folderPath, typeof(Texture2D));
 
 
         for (int i = 0; i < textures.Length; i++)
