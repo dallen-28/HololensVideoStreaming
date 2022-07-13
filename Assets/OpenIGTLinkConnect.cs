@@ -124,6 +124,7 @@ public class OpenIGTLinkConnect : MonoBehaviour
     }
     public void OnConnect()
     { 
+        Debug.Log("TEST");
         StartupClient();
     }
 

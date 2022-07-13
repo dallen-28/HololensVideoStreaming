@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 public class UpdateTexture : MonoBehaviour
@@ -8,21 +7,45 @@ public class UpdateTexture : MonoBehaviour
     WebCamDevice webCam;
     WebCamTexture webCamTexture;
     Texture2D currentTexture;
+    MeshRenderer meshRenderer;
+    float pushButtonOffset = 0.2f;
+
+    public int width = 1920;
+    public int height = 1080;
+
+    public bool updateTextureFromWebcam = true;
+
+    
 
     // Start is called before the first frame update
     void Start()
     {
-        webCamTexture = new WebCamTexture(1920,1080);
-        webCamTexture.Play();
-        Debug.Log(webCamTexture.height);
-        Debug.Log(webCamTexture.width);
+        webCamTexture = new WebCamTexture(width, height);
+        meshRenderer = this.GetComponent<MeshRenderer>();
+
+        UpdateAspectRatio(width, height);
+    }
+    public void UpdateAspectRatio(int width, int height)
+    {
+        float aspectRatio = (float)height / (float)width;
+        this.transform.localScale = new Vector3(1, aspectRatio, 1);
+
+        //OnResize();
+
+    }
+    public void OnResize()
+    {
+        // Update PushButton Position
+        float x = this.transform.localPosition.x + this.transform.localScale.x / 2.0f + pushButtonOffset;
+        float y = this.transform.localPosition.y;
+        float z = this.transform.localPosition.z;
     }
 
     // Update is called once per frame
     void Update()
     {
-        webCamTexture.Play();
-        this.GetComponent<MeshRenderer>().material.mainTexture = GetTexture2DFromWebcamTexture(this.webCamTexture);
+        //webCamTexture.Play();
+        //meshRenderer.material.mainTexture = GetTexture2DFromWebcamTexture(this.webCamTexture);
     }
     public Texture2D GetTexture2DFromWebcamTexture(WebCamTexture webCamTexture)
     {
