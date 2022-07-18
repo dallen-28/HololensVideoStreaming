@@ -1,0 +1,45 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using Microsoft.MixedReality.Toolkit.UI;
+using Microsoft.MixedReality.Toolkit.UI.BoundsControl;
+
+public class Rotate2Level : Level
+{
+    public Rotate2Level()
+    {
+        titleText = "Rotate - Z Axis";
+        panelText = "Air tap this panel on either side using both of your hands. Now move your left hand up and right hand down " +
+            "to rotate this panel about the Z axis. Use this technique to overlay this panel on the one to the left. ";
+
+        startingPoint = GameObject.Find("Rotate2Start").GetComponent<Transform>();
+        targetPoint = GameObject.Find("Rotate2Target").GetComponent<Transform>();
+
+        currentPoint = startingPoint;
+        levelNumber = 4;
+    }
+
+    public override bool CheckForCompletion()
+    {
+        if (ZRotInRange() && PosInRange())
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public override void SetManipulationType(GameObject movingPanel)
+    {
+        movingPanel.GetComponent<ObjectManipulator>().enabled = true;
+        movingPanel.GetComponent<BoundsControl>().enabled = true;
+
+        // Disable move constraint
+        movingPanel.GetComponent<MoveAxisConstraint>().enabled = false;
+
+        // Enable scale constraint
+        movingPanel.GetComponent<MinMaxScaleConstraint>().enabled = true;
+
+        // Disable rotation Y axis constraint
+        movingPanel.GetComponent<RotationAxisConstraint>().ConstraintOnRotation = Microsoft.MixedReality.Toolkit.Utilities.AxisFlags.ZAxis;
+    }
+}
