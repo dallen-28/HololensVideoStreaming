@@ -6,7 +6,9 @@ using Microsoft.MixedReality.Toolkit.UI.BoundsControl;
 
 public abstract class Level
 {
-    private const float threshold = 0.01f;
+    private const float transThreshold = 0.05f;
+    private const float rotThreshold = 2f;
+    private const float scaleThreshold = 0.05f;
 
     public GameObject nextButton;
 
@@ -22,7 +24,7 @@ public abstract class Level
 
     public abstract void SetManipulationType(GameObject movingPanel);
 
-    public string formattedText()
+    public string FormattedText()
     {
         return "<size=42><b>" + titleText + "</b></size>\n\n" + panelText;
     }
@@ -30,7 +32,7 @@ public abstract class Level
     // Determines if moving panel's X position is within range of the target position
     protected bool XposInRange()
     {
-        if (Mathf.Abs(targetPoint.position.x - currentPoint.position.x) <= threshold)
+        if (Mathf.Abs(targetPoint.position.x - currentPoint.position.x) <= transThreshold)
         {
             return true;
         }
@@ -40,7 +42,7 @@ public abstract class Level
     // Determines if moving panel's Y position is within range of target position
     protected bool YposInRange()
     {
-        if (Mathf.Abs(targetPoint.position.y - currentPoint.position.y) <= threshold)
+        if (Mathf.Abs(targetPoint.position.y - currentPoint.position.y) <= transThreshold)
         {
             return true;
         }
@@ -50,7 +52,7 @@ public abstract class Level
     // Determine's if moving panel's Z position is within range of target position
     protected bool ZposInRange()
     {
-        if (Mathf.Abs(targetPoint.position.z - currentPoint.position.z) <= threshold)
+        if (Mathf.Abs(targetPoint.position.z - currentPoint.position.z) <= transThreshold)
         {
             return true;
         }
@@ -60,7 +62,7 @@ public abstract class Level
     // Determine's if moving panel's X Rotation is within range of target rotation
     protected bool XRotInRange()
     {
-        if(Mathf.Abs(targetPoint.rotation.eulerAngles.x - currentPoint.rotation.eulerAngles.x) <= threshold)
+        if(Mathf.Abs(targetPoint.rotation.eulerAngles.x - currentPoint.rotation.eulerAngles.x) <= rotThreshold)
         {
             return true;
         }
@@ -70,7 +72,7 @@ public abstract class Level
     // Determine's if moving panel's Y Rotation is within range of target rotation
     protected bool YRotInRange()
     {
-        if (Mathf.Abs(targetPoint.rotation.eulerAngles.y - currentPoint.rotation.eulerAngles.y) <= threshold)
+        if (Mathf.Abs(targetPoint.rotation.eulerAngles.y - currentPoint.rotation.eulerAngles.y) <= rotThreshold)
         {
             return true;
         }
@@ -80,7 +82,7 @@ public abstract class Level
     // Determine's if moving panel's Z Rotation is within range of target rotation
     protected bool ZRotInRange()
     {
-        if (Mathf.Abs(targetPoint.rotation.eulerAngles.z - currentPoint.rotation.eulerAngles.z) <= threshold)
+        if (Mathf.Abs(targetPoint.rotation.eulerAngles.z - currentPoint.rotation.eulerAngles.z) <= rotThreshold)
         {
             return true;
         }
@@ -90,7 +92,7 @@ public abstract class Level
     // Determine's if moving panel's scale is within range of target scale
     protected bool ScaleInRange()
     {
-        if(Mathf.Abs(targetPoint.localScale.x - currentPoint.localScale.x) <= threshold)
+        if(Mathf.Abs(targetPoint.localScale.x - currentPoint.localScale.x) <= scaleThreshold)
         {
             return true;
         }

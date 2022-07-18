@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -248,7 +248,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83d9acc7968244a8886f3af591305bcb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  activeProfile: {fileID: 11400000, guid: 7e7c962b9eb9dfa44993d5b2f2576752, type: 2}
+  activeProfile: {fileID: 11400000, guid: b216117a4d8bb824998e426c2ee580d5, type: 2}
 --- !u!4 &56554704
 Transform:
   m_ObjectHideFlags: 0
@@ -1248,12 +1248,12 @@ GameObject:
   m_Component:
   - component: {fileID: 456151424}
   - component: {fileID: 456151431}
-  - component: {fileID: 456151430}
   - component: {fileID: 456151429}
   - component: {fileID: 456151428}
   - component: {fileID: 456151427}
   - component: {fileID: 456151426}
   - component: {fileID: 456151425}
+  - component: {fileID: 456151432}
   m_Layer: 0
   m_Name: NextButton
   m_TagString: Untagged
@@ -1457,9 +1457,9 @@ MonoBehaviour:
   OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: Increment
+      - m_Target: {fileID: 593911586}
+        m_TargetAssemblyTypeName: LevelController, Assembly-CSharp
+        m_MethodName: OnClick
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1473,7 +1473,7 @@ MonoBehaviour:
   - Event:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 456151430}
+        - m_Target: {fileID: 0}
           m_TargetAssemblyTypeName: 
           m_MethodName: AnimateInHighlightPlate
           m_Mode: 1
@@ -1517,7 +1517,7 @@ MonoBehaviour:
       EventValue:
         m_PersistentCalls:
           m_Calls:
-          - m_Target: {fileID: 456151430}
+          - m_Target: {fileID: 0}
             m_TargetAssemblyTypeName: 
             m_MethodName: AnimateOutHighlightPlate
             m_Mode: 1
@@ -1638,128 +1638,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   routingTarget: {fileID: 456151428}
   InteractableOnClick: 1
---- !u!114 &456151430
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 456151423}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f98e7663599230e419addf153615c144, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  movingButtonVisuals: {fileID: 1975301674}
-  distanceSpaceMode: 1
-  startPushDistance: -0.008
-  maxPushDistance: 0.006
-  pressDistance: 0.0005
-  releaseDistanceDelta: 0.002
-  returnSpeed: 25
-  releaseOnTouchEnd: 1
-  enforceFrontPush: 1
-  TouchBegin:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 456151429}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: OnHandPressTouched
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  TouchEnd:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 456151429}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: OnHandPressUntouched
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  ButtonPressed:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 456151429}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: OnHandPressTriggered
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 456151427}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: PlayOneShot
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 8300000, guid: 291bf9326e517b0489c2ee53d0a6a63f, type: 3}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.AudioClip, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  ButtonReleased:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 456151429}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: OnHandPressCompleted
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 456151427}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: PlayOneShot
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 8300000, guid: 40ae713ddf420714bbc1a3b5c3f2eac1, type: 3}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.AudioClip, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 593911586}
-        m_TargetAssemblyTypeName: LevelController, Assembly-CSharp
-        m_MethodName: OnClick
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  movingButtonIconText: {fileID: 1092732965}
-  compressableButtonVisuals: {fileID: 1835162141}
-  minCompressPercentage: 0.25
-  highlightPlate: {fileID: 442714077}
-  highlightPlateAnimationTime: 0.25
 --- !u!65 &456151431
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1773,6 +1651,39 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.032, y: 0.032, z: 0.016}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &456151432
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 456151423}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63c897c097799da4a900032ad3471c47, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  movingButtonVisuals: {fileID: 0}
+  distanceSpaceMode: 1
+  startPushDistance: 0
+  maxPushDistance: 0.2
+  pressDistance: 0.02
+  releaseDistanceDelta: 0.01
+  returnSpeed: 25
+  releaseOnTouchEnd: 1
+  enforceFrontPush: 1
+  TouchBegin:
+    m_PersistentCalls:
+      m_Calls: []
+  TouchEnd:
+    m_PersistentCalls:
+      m_Calls: []
+  ButtonPressed:
+    m_PersistentCalls:
+      m_Calls: []
+  ButtonReleased:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &479215375
 GameObject:
   m_ObjectHideFlags: 0
@@ -3602,8 +3513,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1266534206}
   m_LocalRotation: {x: 0.11385522, y: -0.29059547, z: 0.03484886, w: 0.9494087}
-  m_LocalPosition: {x: -0.89, y: 0, z: 0.7}
-  m_LocalScale: {x: 0.285257, y: 0.1833795, z: 1}
+  m_LocalPosition: {x: -1.098, y: 0.174, z: 0.468}
+  m_LocalScale: {x: 0.46742213, y: 0.30048564, z: 1}
   m_Children:
   - {fileID: 1596914549}
   m_Father: {fileID: 1403588870}
@@ -4118,7 +4029,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9bd0910353fcf6849be4774261b80ac7, type: 2}
+  - {fileID: 2100000, guid: e38fd5fdb66f00e4a8457fe28ae092fa, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

@@ -1,6 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Microsoft.MixedReality.Toolkit.UI;
+using Microsoft.MixedReality.Toolkit.UI.BoundsControl;
+using Microsoft.MixedReality.Toolkit.Utilities;
 
 public class FinalLevel : Level
 {
@@ -18,12 +21,26 @@ public class FinalLevel : Level
     }
 
     public override bool CheckForCompletion()
-    {
-        throw new System.NotImplementedException();
+    {    
+        if (XRotInRange() && YRotInRange() && PosInRange() && ScaleInRange())
+        {
+            return true;
+        }
+        return false;
     }
 
     public override void SetManipulationType(GameObject movingPanel)
     {
-        throw new System.NotImplementedException();
+        movingPanel.GetComponent<ObjectManipulator>().enabled = true;
+        movingPanel.GetComponent<BoundsControl>().enabled = true;
+
+        // Disable move constraint
+        movingPanel.GetComponent<MoveAxisConstraint>().enabled = false;
+
+        // Enable scale constraint
+        movingPanel.GetComponent<MinMaxScaleConstraint>().enabled = false;
+
+        // Disable Z axis rotation constraint
+        movingPanel.GetComponent<RotationAxisConstraint>().enabled = false;
     }
 }

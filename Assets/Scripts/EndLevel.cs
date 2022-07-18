@@ -9,18 +9,28 @@ public class EndLevel : Level
     public EndLevel()
     {
         titleText = "Congratulations!";
-        panelText = "Congratulations! You have completed the two-handed gesture interaction tutorial. Your total time was: ";
+        panelText = "You have completed the two-handed gesture interaction tutorial. Your total time was: ";
 
-        Debug.Log("Total time: ");
+        startingPoint = GameObject.Find("EndStart").GetComponent<Transform>();
+        targetPoint = GameObject.Find("FinalTarget").GetComponent<Transform>();
+
+        levelNumber = 7;
+
+        //Debug.Log("Total time: ");
     }
 
     public override bool CheckForCompletion()
     {
-        throw new System.NotImplementedException();
+        return false;
     }
 
     public override void SetManipulationType(GameObject movingPanel)
     {
-        throw new System.NotImplementedException();
+        movingPanel.GetComponent<ObjectManipulator>().enabled = false;
+        movingPanel.GetComponent<BoundsControl>().enabled = false;
     }
+    //public override string FormattedText(float time)
+    //{
+    //    return "";
+    //}
 }

@@ -4,6 +4,7 @@ using UnityEngine;
 using TMPro;
 using Microsoft.MixedReality.Toolkit.UI;
 using Microsoft.MixedReality.Toolkit.UI.BoundsControl;
+using System;
 
 public class LevelController : MonoBehaviour
 {
@@ -24,6 +25,9 @@ public class LevelController : MonoBehaviour
 
     bool pauseTrigger;
     bool manipulationActive;
+
+    float startTime;
+    float endTime; 
 
     // Start is called before the first frame update
     void Start()
@@ -52,7 +56,8 @@ public class LevelController : MonoBehaviour
         levelQueue.Enqueue(finalLevel);
         levelQueue.Enqueue(endLevel);
 
-
+        //levelQueue.Enqueue(finalLevel);
+        //levelQueue.Enqueue(endLevel);
 
         pauseTrigger = false;
         manipulationActive = false;
@@ -63,11 +68,11 @@ public class LevelController : MonoBehaviour
         //currentLevel = new ScaleLevel();
 
 
-        //targetPanel.SetActive(false);
-        //lightBulb.SetActive(false);
+        targetPanel.SetActive(false);
+        lightBulb.SetActive(false);
 
-        //currentLevel = levelQueue.Dequeue();
-        currentLevel = rotate1Level;
+        currentLevel = levelQueue.Dequeue();
+        //currentLevel = finalLevel;
             
 
         SetLevelParameters();
@@ -75,6 +80,17 @@ public class LevelController : MonoBehaviour
     }
     void SetLevelParameters()
     {
+        if(currentLevel.levelNumber == 7)
+        {
+            endTime = Time.time - startTime;
+            movingPanel.GetComponentInChildren<TextMeshProUGUI>().SetText(currentLevel.FormattedText() + GetFormattedTime(endTime));
+        }
+        else
+        {
+            // Set panel text
+            movingPanel.GetComponentInChildren<TextMeshProUGUI>().SetText(currentLevel.FormattedText());
+        }
+
         currentLevel.SetManipulationType(movingPanel);
 
         // Set moving panel transform
@@ -85,12 +101,17 @@ public class LevelController : MonoBehaviour
         targetPanel.transform.SetPositionAndRotation(currentLevel.targetPoint.position, currentLevel.targetPoint.rotation);
         targetPanel.transform.localScale = currentLevel.targetPoint.localScale;
 
-        // Set panel text
-        movingPanel.GetComponentInChildren<TextMeshProUGUI>().SetText(currentLevel.formattedText());
-
         // Set lightbulb colour to red
         lightBulb.GetComponent<MeshRenderer>().material.color = Color.red;
 
+    }
+    string GetFormattedTime(float seconds)
+    {
+        TimeSpan time = TimeSpan.FromSeconds(seconds);
+
+        //here backslash is must to tell that colon is
+        //not the part of format, it just a character that we want in output
+        return time.ToString(@"mm\:ss");
     }
 
     // Update is called once per frame
@@ -104,11 +125,11 @@ public class LevelController : MonoBehaviour
         // If panel overlayed set lightbulb colour to green
         if (currentLevel.CheckForCompletion())
         {
- 
+
             lightBulb.GetComponent<MeshRenderer>().material.color = Color.green;
 
             // If panel overlayed and manipulation ended move to next level
-            if(!manipulationActive)
+            if (!manipulationActive)
             {
                 currentLevel = levelQueue.Dequeue();
                 SetLevelParameters();
@@ -140,5 +161,7 @@ public class LevelController : MonoBehaviour
         //currentLevel.nextButton.SetActive(false);
         currentLevel = new TranslateLevel();
         SetLevelParameters();
+
+        startTime = Time.time;
     }
 }

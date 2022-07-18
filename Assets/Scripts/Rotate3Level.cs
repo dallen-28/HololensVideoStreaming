@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Microsoft.MixedReality.Toolkit.UI;
 using Microsoft.MixedReality.Toolkit.UI.BoundsControl;
+using Microsoft.MixedReality.Toolkit.Utilities;
 
 public class Rotate3Level : Level
 {
@@ -40,7 +41,7 @@ public class Rotate3Level : Level
         // Enable scale constraint
         movingPanel.GetComponent<MinMaxScaleConstraint>().enabled = true;
 
-        // Disable rotation Y axis constraint
-        movingPanel.GetComponent<RotationAxisConstraint>().ConstraintOnRotation = Microsoft.MixedReality.Toolkit.Utilities.AxisFlags.XAxis;
+        // Disable rotation Y and Z axis constraint
+        movingPanel.GetComponent<RotationAxisConstraint>().ConstraintOnRotation = AxisFlags.YAxis | AxisFlags.ZAxis;
     }
 }
