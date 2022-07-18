@@ -8,7 +8,10 @@ public class EndLevel : Level
 {
     public EndLevel()
     {
-        panelText = "Congratulations! You have completed the two-handed gesture interaction tutorial";
+        titleText = "Congratulations!";
+        panelText = "Congratulations! You have completed the two-handed gesture interaction tutorial. Your total time was: ";
+
+        Debug.Log("Total time: ");
     }
 
     public override bool CheckForCompletion()

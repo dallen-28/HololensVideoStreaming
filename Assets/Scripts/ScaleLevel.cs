@@ -22,7 +22,7 @@ public class ScaleLevel : Level
 
     public override bool CheckForCompletion()
     {
-        if (Mathf.Abs(targetPoint.localScale.x - currentPoint.localScale.x) <= 0.01f)
+        if (PosInRange() && ScaleInRange())
         {
             return true;
         }
@@ -34,8 +34,8 @@ public class ScaleLevel : Level
         movingPanel.GetComponent<ObjectManipulator>().enabled = true;
         movingPanel.GetComponent<BoundsControl>().enabled = true;
 
-        // Enable move constraint
-        movingPanel.GetComponent<MoveAxisConstraint>().enabled = true;
+        // Disable move constraint
+        movingPanel.GetComponent<MoveAxisConstraint>().enabled = false;
 
         // Disable scale constraint
         movingPanel.GetComponent<MinMaxScaleConstraint>().enabled = false;

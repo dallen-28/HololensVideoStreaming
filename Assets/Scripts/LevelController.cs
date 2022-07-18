@@ -12,22 +12,66 @@ public class LevelController : MonoBehaviour
     public GameObject lightBulb;
 
     Level currentLevel;
+    Level startLevel;
+    Level translateLevel;
+    Level scaleLevel;
+    Level rotate1Level;
+    Level rotate2Level;
+    Level rotate3Level;
+    Level finalLevel;
+    Level endLevel;
+    Queue<Level> levelQueue;
 
     bool pauseTrigger;
+    bool manipulationActive;
 
     // Start is called before the first frame update
     void Start()
     {
-        //targetPanel.SetActive(false);
-        //lightBulb.SetActive(false);
+
+        levelQueue = new Queue<Level>();
+
+        startLevel = new StartingLevel();
+       
+        //startLevel.SetActivePanels(targetPanel, lightBulb);
+
+        translateLevel = new TranslateLevel();
+        scaleLevel = new ScaleLevel();
+        rotate1Level = new Rotate1Level();
+        rotate2Level = new Rotate2Level();
+        rotate3Level = new Rotate3Level();
+        finalLevel = new FinalLevel();
+        endLevel = new EndLevel();
+
+        levelQueue.Enqueue(startLevel);
+        levelQueue.Enqueue(translateLevel);
+        levelQueue.Enqueue(scaleLevel);
+        levelQueue.Enqueue(rotate1Level);
+        levelQueue.Enqueue(rotate2Level);
+        levelQueue.Enqueue(rotate3Level);
+        levelQueue.Enqueue(finalLevel);
+        levelQueue.Enqueue(endLevel);
+
+
 
         pauseTrigger = false;
+        manipulationActive = false;
 
 
         // Start with starting level
         //currentLevel = new StartingLevel();
-        currentLevel = new ScaleLevel();
+        //currentLevel = new ScaleLevel();
+
+
+        //targetPanel.SetActive(false);
+        //lightBulb.SetActive(false);
+
+        //currentLevel = levelQueue.Dequeue();
+        currentLevel = rotate1Level;
+            
+
         SetLevelParameters();
+
     }
     void SetLevelParameters()
     {
@@ -52,40 +96,42 @@ public class LevelController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // Change from complete pause to new message and wait three seconds until next round
-
-        if(pauseTrigger)
-        {
-            PauseGame(3.0f);
-            // To Do: increment level and automatically instantiate class accordingly
-            if (currentLevel.levelNumber == 2)
-            {
-                currentLevel = new ScaleLevel();
-                SetLevelParameters();
-            }
-            else if (currentLevel.levelNumber == 3)
-            {
-                // To do
-            }
-        }
-
+       
         // Synchronize level state with moving panel transform
         currentLevel.currentPoint.SetPositionAndRotation(movingPanel.transform.position, movingPanel.transform.rotation);
         currentLevel.currentPoint.localScale = movingPanel.transform.localScale;
 
+        // If panel overlayed set lightbulb colour to green
         if (currentLevel.CheckForCompletion())
         {
-            // Change lightbuilb colour
-            // Wait 3 seconds
-            // start next level
+ 
             lightBulb.GetComponent<MeshRenderer>().material.color = Color.green;
 
-            // Signal to move to next level on next frame
-            pauseTrigger = true;
-            
-     
+            // If panel overlayed and manipulation ended move to next level
+            if(!manipulationActive)
+            {
+                currentLevel = levelQueue.Dequeue();
+                SetLevelParameters();
+            }
+
         }
+        else
+        {
+            lightBulb.GetComponent<MeshRenderer>().material.color = Color.red;
+        }
+
+        //Debug.Log(manipulationActive);
     }
+
+    public void OnManipulationStarted()
+    {
+        manipulationActive = true;
+    }
+    public void OnManipulationEnded()
+    {
+        manipulationActive = false;
+    }
+
     public void OnClick()
     {
         Destroy(currentLevel.nextButton);
@@ -94,19 +140,5 @@ public class LevelController : MonoBehaviour
         //currentLevel.nextButton.SetActive(false);
         currentLevel = new TranslateLevel();
         SetLevelParameters();
-    }
- 
-    public void PauseGame(float pauseTime)
-    {
-        Debug.Log("Inside PauseGame()");
-        Time.timeScale = 0f;
-        float pauseEndTime = Time.realtimeSinceStartup + pauseTime;
-        while (Time.realtimeSinceStartup < pauseEndTime)
-        {
-        }
-        Time.timeScale = 1f;
-        Debug.Log("Done with my pause");
-
-        pauseTrigger = false;
     }
 }
