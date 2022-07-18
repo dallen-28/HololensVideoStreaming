@@ -11,8 +11,6 @@ public class LevelController : MonoBehaviour
     public GameObject targetPanel;
     public GameObject lightBulb;
 
-    ObjectManipulator objectManipulator;
-    BoundsControl boundsControl;
     Level currentLevel;
 
     bool pauseTrigger;
@@ -25,12 +23,9 @@ public class LevelController : MonoBehaviour
 
         pauseTrigger = false;
 
-        objectManipulator = movingPanel.GetComponent<ObjectManipulator>();
-        boundsControl = movingPanel.GetComponent<BoundsControl>();
 
         // Start with starting level
         //currentLevel = new StartingLevel();
-
         currentLevel = new ScaleLevel();
         SetLevelParameters();
     }

@@ -31,10 +31,15 @@ public class ScaleLevel : Level
 
     public override void SetManipulationType(GameObject movingPanel)
     {
+        movingPanel.GetComponent<ObjectManipulator>().enabled = true;
+        movingPanel.GetComponent<BoundsControl>().enabled = true;
+
         // Enable move constraint
         movingPanel.GetComponent<MoveAxisConstraint>().enabled = true;
 
         // Disable scale constraint
         movingPanel.GetComponent<MinMaxScaleConstraint>().enabled = false;
+
+        //movingPanel.GetComponent<RotationAxisConstraint>().ConstraintOnRotation = Microsoft.MixedReality.Toolkit.Utilities.AxisFlags.XAxis;
     }
 }
