@@ -6,23 +6,33 @@ using UnityEngine;
 
 public class StartingLevel : Level
 {
+    public string panelText2;
+    public string panelText3;
+
     public StartingLevel()
     {
         titleText = "Two handed Gesture Interaction Tutorial";
-        panelText = "You have learned the basics of hand gestures in the Hololens 2. This tutorial will now show you the basics of two handed-interactions. " +
-            "Each round will require you to overlay the panel on the right with the one on the left using a series of two-handed gesture techniques. " +
-            "Click the start button in the bottom right corner to begin";
+        panelText = "Click on the \"Anchor\" button in the bottom right to anchor the panel in the room. " +
+            "Make you sure have an unobstructed view of the panel in front of you and the one to the left. ";
+
+        panelText2 = "This tutorial will show you the basics of two-handed interactions in the Hololens 2. " +
+            "Each round will require you to overlay the panel in front of you with the one on the left using a series of two-handed gesture techniques. " +
+            "The red light displayed above the target panel will turn green once you have overlayed the panel correctly and can let go to proceed to the next round." +
+            "Click next to proceed";
+
+        panelText3 = "You must use two hands to interact with the panel. If your air tap was not registered, the cursor will remain a hollow circle instead of " +
+            "turning solid. If this occurs simply repeat the air tap gesture. If you have any questions, ask Daniel or Nadia before starting." +
+            "If you are ready, press start to begin.";
+
+
         
         startingPoint = GameObject.Find("StartStart").GetComponent<Transform>();
-        targetPoint = GameObject.Find("StartStart").GetComponent<Transform>();
+        targetPoint = GameObject.Find("StartTarget").GetComponent<Transform>();
 
         currentPoint = startingPoint;
 
-        levelNumber = 1;
-       
-        // Set next level button visible
+        levelNumber = LevelNumber.Start;
         nextButton = GameObject.Find("NextButton");
-        nextButton.SetActive(true);
 
         // Don't need target point for starting panel
     }
@@ -30,7 +40,7 @@ public class StartingLevel : Level
     public override void SetManipulationType(GameObject movingPanel)
     {
         movingPanel.GetComponent<ObjectManipulator>().enabled = false;
-        movingPanel.GetComponent<BoundsControl>().enabled = false;
+        //movingPanel.GetComponent<BoundsControl>().enabled = false;
     }
 
     public override bool CheckForCompletion()
@@ -41,8 +51,12 @@ public class StartingLevel : Level
 
     public void SetActivePanels(GameObject targetPanel, GameObject lightbulb)
     {
-        targetPanel.SetActive(false);
+        targetPanel.SetActive(true);
         lightbulb.SetActive(false);
     }
 
+    public string FormattedText(string pText)
+    {
+        return "<size=42><b>" + titleText + "</b></size>\n\n" + pText;
+    }
 }

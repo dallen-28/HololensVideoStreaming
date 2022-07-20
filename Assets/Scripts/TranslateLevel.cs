@@ -17,7 +17,7 @@ public class TranslateLevel : Level
         targetPoint = GameObject.Find("TranslateTarget").GetComponent<Transform>();
 
         currentPoint = startingPoint;
-        levelNumber = 2;
+        levelNumber = LevelNumber.Translate;
   
     }
 
@@ -33,7 +33,7 @@ public class TranslateLevel : Level
     public override void SetManipulationType(GameObject movingPanel)
     {
         movingPanel.GetComponent<ObjectManipulator>().enabled = true;
-        movingPanel.GetComponent<BoundsControl>().enabled = true;
+        //movingPanel.GetComponent<BoundsControl>().enabled = true;
 
         movingPanel.GetComponent<ObjectManipulator>().ManipulationType = ManipulationHandFlags.TwoHanded;
 

@@ -17,7 +17,7 @@ public class ScaleLevel : Level
         targetPoint = GameObject.Find("ScaleTarget").GetComponent<Transform>();
 
         currentPoint = startingPoint;
-        levelNumber = 3;
+        levelNumber = LevelNumber.Scale;
 
     }
 
@@ -33,7 +33,7 @@ public class ScaleLevel : Level
     public override void SetManipulationType(GameObject movingPanel)
     {
         movingPanel.GetComponent<ObjectManipulator>().enabled = true;
-        movingPanel.GetComponent<BoundsControl>().enabled = true;
+        //movingPanel.GetComponent<BoundsControl>().enabled = true;
 
         movingPanel.GetComponent<ObjectManipulator>().ManipulationType = ManipulationHandFlags.TwoHanded;
 

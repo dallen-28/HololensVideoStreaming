@@ -14,7 +14,7 @@ public class EndLevel : Level
         startingPoint = GameObject.Find("EndStart").GetComponent<Transform>();
         targetPoint = GameObject.Find("FinalTarget").GetComponent<Transform>();
 
-        levelNumber = 7;
+        levelNumber = LevelNumber.End;
 
         //Debug.Log("Total time: ");
     }

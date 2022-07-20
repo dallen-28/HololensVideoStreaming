@@ -1,7 +1,7 @@
 {
     "m_RemoteMachineName": "192.168.0.106",
     "m_EnableAudio": true,
-    "m_EnableVideo": true,
+    "m_EnableVideo": false,
     "m_MaxBitRateKbps": 99999,
     "autoConnectOnPlay": false
 }

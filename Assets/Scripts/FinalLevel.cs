@@ -17,7 +17,7 @@ public class FinalLevel : Level
         targetPoint = GameObject.Find("FinalTarget").GetComponent<Transform>();
 
         currentPoint = startingPoint;
-        levelNumber = 6;
+        levelNumber = LevelNumber.Final;
     }
 
     public override bool CheckForCompletion()

@@ -4,8 +4,23 @@ using UnityEngine;
 using Microsoft.MixedReality.Toolkit.UI;
 using Microsoft.MixedReality.Toolkit.UI.BoundsControl;
 
+
+
 public abstract class Level
 {
+    public enum LevelNumber
+    {
+        Start = 1,
+        Translate = 2,
+        Scale = 3,
+        Rotate1 = 4,
+        Rotate2 = 5,
+        Rotate3 = 6,
+        Rotate4 = 7,
+        Final = 8,
+        End = 9
+    };
+
     private const float transThreshold = 0.05f;
     private const float rotThreshold = 2f;
     private const float scaleThreshold = 0.05f;
@@ -18,17 +33,20 @@ public abstract class Level
     public Transform startingPoint;
     public Transform currentPoint;
     public Transform targetPoint;
-    public int levelNumber;
+    public LevelNumber levelNumber;
 
     public abstract bool CheckForCompletion();
 
     public abstract void SetManipulationType(GameObject movingPanel);
 
+
+    // Updates the target transform based on the scene anchor point
     public void UpdateTargetTransform(Vector3 pos, Quaternion rot)
     {
         targetPoint.SetPositionAndRotation(pos, rot);
     }
 
+    // Foramts the panel text so the title is in bold
     public string FormattedText()
     {
         return "<size=42><b>" + titleText + "</b></size>\n\n" + panelText;

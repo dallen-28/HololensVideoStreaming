@@ -17,7 +17,7 @@ public class Rotate2Level : Level
         targetPoint = GameObject.Find("Rotate2Target").GetComponent<Transform>();
 
         currentPoint = startingPoint;
-        levelNumber = 4;
+        levelNumber = LevelNumber.Rotate2;
     }
 
     public override bool CheckForCompletion()
@@ -32,7 +32,7 @@ public class Rotate2Level : Level
     public override void SetManipulationType(GameObject movingPanel)
     {
         movingPanel.GetComponent<ObjectManipulator>().enabled = true;
-        movingPanel.GetComponent<BoundsControl>().enabled = true;
+        //movingPanel.GetComponent<BoundsControl>().enabled = true;
 
         movingPanel.GetComponent<ObjectManipulator>().ManipulationType = ManipulationHandFlags.TwoHanded;
 

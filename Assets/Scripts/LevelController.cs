@@ -8,13 +8,17 @@ using System;
 
 public class LevelController : MonoBehaviour
 {
+
+    // Public GameObjects
     public GameObject movingPanel;
     public GameObject targetPanel;
     public GameObject lightBulb;
-    public GameObject mainCamera;
 
+    // Starting level
+    StartingLevel startLevel;
+
+    // Remaining Levels
     Level currentLevel;
-    Level startLevel;
     Level translateLevel;
     Level scaleLevel;
     Level rotate1Level;
@@ -24,24 +28,37 @@ public class LevelController : MonoBehaviour
     Level endLevel;
     Queue<Level> levelQueue;
 
+    // Anchor position
     Matrix4x4 anchorPos;
 
-    bool pauseTrigger;
+    // Flags
     bool manipulationActive;
+    bool anchorSet;
 
+    // Button Click Counter
+    int buttonClickCounter;
+
+    // Timer variables
     float startTime;
-    float endTime; 
+    float endTime;
+
+    // Panel  and buton fffset for starting position
+    Vector3 panelOffset;
+    Vector3 buttonOffset;
+    Vector3 targetPanelOffset;
 
     // Start is called before the first frame update
     void Start()
     {
 
+        panelOffset = new Vector3(0, 0, 1.5f);
+        buttonOffset = new Vector3(0.26f, -0.17f, 1.5f);
+        targetPanelOffset = new Vector3(-1.3f, 0, 1.5f);
+
+        // Create level queue
         levelQueue = new Queue<Level>();
 
-        startLevel = new StartingLevel();
-       
-        //startLevel.SetActivePanels(targetPanel, lightBulb);
-
+        // Create our levels desired levels
         translateLevel = new TranslateLevel();
         scaleLevel = new ScaleLevel();
         rotate1Level = new Rotate1Level();
@@ -50,41 +67,45 @@ public class LevelController : MonoBehaviour
         finalLevel = new FinalLevel();
         endLevel = new EndLevel();
 
-        levelQueue.Enqueue(startLevel);
-        //levelQueue.Enqueue(translateLevel);
+        // Enqueue our levels in the desired order
+        levelQueue.Enqueue(translateLevel);
         levelQueue.Enqueue(scaleLevel);
         levelQueue.Enqueue(rotate1Level);
         levelQueue.Enqueue(rotate2Level);
         levelQueue.Enqueue(rotate3Level);
         levelQueue.Enqueue(finalLevel);
         levelQueue.Enqueue(endLevel);
-
-        //levelQueue.Enqueue(finalLevel);
-        //levelQueue.Enqueue(endLevel);
-
-        pauseTrigger = false;
+        
+        // Set manipulation active flag to false
         manipulationActive = false;
+        anchorSet = false;
 
+        // Set button click counter to 0
+        buttonClickCounter = 0;
 
         // Start with starting level
-        //currentLevel = new StartingLevel();
-        //currentLevel = new ScaleLevel();
+        startLevel = new StartingLevel();
+        startLevel.SetActivePanels(targetPanel, lightBulb);
+        startLevel.nextButton.SetActive(true);
 
+        movingPanel.GetComponentInChildren<TextMeshProUGUI>().SetText(startLevel.panelText);
 
-        targetPanel.SetActive(false);
-        lightBulb.SetActive(false);
+        currentLevel = startLevel;
 
-        currentLevel = levelQueue.Dequeue();
+        //targetPanel.SetActive(false);
+        //lightBulb.SetActive(false);
+
+        //currentLevel = levelQueue.Dequeue();
         //currentLevel = scaleLevel;
         //currentLevel = finalLevel;
             
 
-        SetLevelParameters();
+        //SetLevelParameters();
 
     }
     void SetLevelParameters()
     {
-        if(currentLevel.levelNumber == 7)
+        if(currentLevel.levelNumber == Level.LevelNumber.End)
         {
             endTime = Time.time - startTime;
             movingPanel.GetComponentInChildren<TextMeshProUGUI>().SetText(currentLevel.FormattedText() + GetFormattedTime(endTime));
@@ -129,23 +150,25 @@ public class LevelController : MonoBehaviour
     void Update()
     {
        
-        // Synchronize level state with moving panel transform
-        currentLevel.currentPoint.SetPositionAndRotation(movingPanel.transform.position, movingPanel.transform.rotation);
-        currentLevel.currentPoint.localScale = movingPanel.transform.localScale;
-
+        // TODO: 
         // If starting level look at 
-        if(currentLevel.levelNumber == 1)
+        if(currentLevel.levelNumber == Level.LevelNumber.Start && !anchorSet)
         {
-            //Debug.Log(movingPanel.transform.position.ToString());
-            Vector3 panelOffset = new Vector3(0, 0, 0.7f);
-            Vector3 buttonOffset = new Vector3(0.26f, -0.17f, 0.7f);
-            Vector3 newPanelPos = mainCamera.transform.localToWorldMatrix.MultiplyPoint(panelOffset);
-            Vector3 newButtonPos = mainCamera.transform.localToWorldMatrix.MultiplyPoint(buttonOffset);
-            Quaternion newRot = mainCamera.transform.rotation;
+            Vector3 newPanelPos = Camera.main.transform.localToWorldMatrix.MultiplyPoint(panelOffset);
+            Vector3 newTargetPanelPos = Camera.main.transform.localToWorldMatrix.MultiplyPoint(targetPanelOffset);
+            Vector3 newButtonPos = Camera.main.transform.localToWorldMatrix.MultiplyPoint(buttonOffset);
+            Quaternion newRot = Camera.main.transform.rotation;
 
             movingPanel.transform.SetPositionAndRotation(newPanelPos, newRot);
+            targetPanel.transform.SetPositionAndRotation(newTargetPanelPos, newRot);
             currentLevel.nextButton.transform.SetPositionAndRotation(newButtonPos, newRot);
             //movingPanel.transform.LookAt(new Vector3(0,0,0));
+        }
+        else
+        {
+            // Synchronize level state with moving panel transform
+            currentLevel.currentPoint.SetPositionAndRotation(movingPanel.transform.position, movingPanel.transform.rotation);
+            currentLevel.currentPoint.localScale = movingPanel.transform.localScale;
         }
 
 
@@ -182,18 +205,41 @@ public class LevelController : MonoBehaviour
 
     public void OnClick()
     {
-        anchorPos = mainCamera.transform.localToWorldMatrix;
+        //To Do: Set up panel text Queue in starting level to avoid hardcoded number of button clicks
 
-        GameObject.Find("AnchorOffset").transform.position = mainCamera.transform.position;
-        GameObject.Find("AnchorOffset").transform.rotation = mainCamera.transform.rotation;
+        if(buttonClickCounter == 2)
+        {
+            Destroy(currentLevel.nextButton);
+            targetPanel.SetActive(true);
+            lightBulb.SetActive(true);
+            //currentLevel.nextButton.SetActive(false);
+            currentLevel = levelQueue.Dequeue();
+            SetLevelParameters();
 
-        Destroy(currentLevel.nextButton);
-        targetPanel.SetActive(true);
-        lightBulb.SetActive(true);
-        //currentLevel.nextButton.SetActive(false);
-        currentLevel = levelQueue.Dequeue();
-        SetLevelParameters();
+            startTime = Time.time;
+        }
+        
+        // Update panel and button text
+        else if (buttonClickCounter == 1)
+        {
+            movingPanel.GetComponentInChildren<TextMeshProUGUI>().SetText(startLevel.FormattedText(startLevel.panelText3));
 
-        startTime = Time.time;
+            currentLevel.nextButton.GetComponentInChildren<TextMeshPro>().SetText("Start");
+            buttonClickCounter++;
+        }
+
+        // Set anchor position, update panel text, update button text
+        else
+        {
+            anchorPos = Camera.main.transform.localToWorldMatrix;
+            movingPanel.GetComponentInChildren<TextMeshProUGUI>().SetText(startLevel.FormattedText(startLevel.panelText2));
+
+            currentLevel.nextButton.GetComponentInChildren<TextMeshPro>().SetText("Next");
+            buttonClickCounter++;
+            anchorSet = true;
+        }
+   
+
+
     }
 }
