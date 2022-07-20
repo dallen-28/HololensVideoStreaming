@@ -28,12 +28,8 @@ public class LevelController : MonoBehaviour
     Level endLevel;
     Queue<Level> levelQueue;
 
-    // Anchor position
-    Matrix4x4 anchorPos;
-
     // Flags
     bool manipulationActive;
-    bool anchorSet;
 
     // Button Click Counter
     int buttonClickCounter;
@@ -42,23 +38,14 @@ public class LevelController : MonoBehaviour
     float startTime;
     float endTime;
 
-    // Panel  and buton fffset for starting position
-    Vector3 panelOffset;
-    Vector3 buttonOffset;
-    Vector3 targetPanelOffset;
-
     // Start is called before the first frame update
     void Start()
     {
-
-        panelOffset = new Vector3(0, 0, 1.5f);
-        buttonOffset = new Vector3(0.26f, -0.17f, 1.5f);
-        targetPanelOffset = new Vector3(-1.3f, 0, 1.5f);
-
         // Create level queue
         levelQueue = new Queue<Level>();
 
         // Create our levels desired levels
+        startLevel = new StartingLevel();
         translateLevel = new TranslateLevel();
         scaleLevel = new ScaleLevel();
         rotate1Level = new Rotate1Level();
@@ -78,7 +65,6 @@ public class LevelController : MonoBehaviour
         
         // Set manipulation active flag to false
         manipulationActive = false;
-        anchorSet = false;
 
         // Set button click counter to 0
         buttonClickCounter = 0;
@@ -88,19 +74,11 @@ public class LevelController : MonoBehaviour
         startLevel.SetActivePanels(targetPanel, lightBulb);
         startLevel.nextButton.SetActive(true);
 
-        movingPanel.GetComponentInChildren<TextMeshProUGUI>().SetText(startLevel.panelText);
+        //movingPanel.GetComponentInChildren<TextMeshProUGUI>().SetText(startLevel.panelText);
 
         currentLevel = startLevel;
 
-        //targetPanel.SetActive(false);
-        //lightBulb.SetActive(false);
-
-        //currentLevel = levelQueue.Dequeue();
-        //currentLevel = scaleLevel;
-        //currentLevel = finalLevel;
-            
-
-        //SetLevelParameters();
+        SetLevelParameters();
 
     }
     void SetLevelParameters()
@@ -118,20 +96,13 @@ public class LevelController : MonoBehaviour
 
         currentLevel.SetManipulationType(movingPanel);
 
-    
-
-        Matrix4x4 localMovingPanelPos = anchorPos * currentLevel.startingPoint.localToWorldMatrix;
-        Matrix4x4 localTargetPanelPos = anchorPos * currentLevel.targetPoint.localToWorldMatrix;
-
         // Set moving panel transform
-        movingPanel.transform.SetPositionAndRotation((Vector3)localMovingPanelPos.GetColumn(3), localMovingPanelPos.rotation);
+        movingPanel.transform.SetPositionAndRotation(currentLevel.startingPoint.position, currentLevel.startingPoint.rotation);
         movingPanel.transform.localScale = currentLevel.startingPoint.localScale;
 
         // Set target panel transform
-        targetPanel.transform.SetPositionAndRotation((Vector3)localTargetPanelPos.GetColumn(3), localTargetPanelPos.rotation);
+        targetPanel.transform.SetPositionAndRotation(currentLevel.targetPoint.position, currentLevel.targetPoint.rotation);
         targetPanel.transform.localScale = currentLevel.targetPoint.localScale;
-
-        currentLevel.UpdateTargetTransform((Vector3)localTargetPanelPos.GetColumn(3), localTargetPanelPos.rotation);
 
         // Set lightbulb colour to red
         lightBulb.GetComponent<MeshRenderer>().material.color = Color.red;
@@ -149,28 +120,10 @@ public class LevelController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-       
-        // TODO: 
-        // If starting level look at 
-        if(currentLevel.levelNumber == Level.LevelNumber.Start && !anchorSet)
-        {
-            Vector3 newPanelPos = Camera.main.transform.localToWorldMatrix.MultiplyPoint(panelOffset);
-            Vector3 newTargetPanelPos = Camera.main.transform.localToWorldMatrix.MultiplyPoint(targetPanelOffset);
-            Vector3 newButtonPos = Camera.main.transform.localToWorldMatrix.MultiplyPoint(buttonOffset);
-            Quaternion newRot = Camera.main.transform.rotation;
-
-            movingPanel.transform.SetPositionAndRotation(newPanelPos, newRot);
-            targetPanel.transform.SetPositionAndRotation(newTargetPanelPos, newRot);
-            currentLevel.nextButton.transform.SetPositionAndRotation(newButtonPos, newRot);
-            //movingPanel.transform.LookAt(new Vector3(0,0,0));
-        }
-        else
-        {
-            // Synchronize level state with moving panel transform
-            currentLevel.currentPoint.SetPositionAndRotation(movingPanel.transform.position, movingPanel.transform.rotation);
-            currentLevel.currentPoint.localScale = movingPanel.transform.localScale;
-        }
-
+        // Synchronize level state with moving panel transform
+        currentLevel.currentPoint.SetPositionAndRotation(movingPanel.transform.position, movingPanel.transform.rotation);
+        currentLevel.currentPoint.localScale = movingPanel.transform.localScale;
+        
 
         // If panel overlayed set lightbulb colour to green
         if (currentLevel.CheckForCompletion())
@@ -207,7 +160,7 @@ public class LevelController : MonoBehaviour
     {
         //To Do: Set up panel text Queue in starting level to avoid hardcoded number of button clicks
 
-        if(buttonClickCounter == 2)
+        if(buttonClickCounter == 1)
         {
             Destroy(currentLevel.nextButton);
             targetPanel.SetActive(true);
@@ -218,28 +171,13 @@ public class LevelController : MonoBehaviour
 
             startTime = Time.time;
         }
-        
-        // Update panel and button text
-        else if (buttonClickCounter == 1)
-        {
-            movingPanel.GetComponentInChildren<TextMeshProUGUI>().SetText(startLevel.FormattedText(startLevel.panelText3));
 
+        // Update panel and button text
+        else
+        {
+            movingPanel.GetComponentInChildren<TextMeshProUGUI>().SetText(startLevel.FormattedText(startLevel.panelText2));
             currentLevel.nextButton.GetComponentInChildren<TextMeshPro>().SetText("Start");
             buttonClickCounter++;
         }
-
-        // Set anchor position, update panel text, update button text
-        else
-        {
-            anchorPos = Camera.main.transform.localToWorldMatrix;
-            movingPanel.GetComponentInChildren<TextMeshProUGUI>().SetText(startLevel.FormattedText(startLevel.panelText2));
-
-            currentLevel.nextButton.GetComponentInChildren<TextMeshPro>().SetText("Next");
-            buttonClickCounter++;
-            anchorSet = true;
-        }
-   
-
-
     }
 }

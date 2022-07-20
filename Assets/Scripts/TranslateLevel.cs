@@ -10,8 +10,8 @@ public class TranslateLevel : Level
     public TranslateLevel()
     {
         titleText = "Translate";
-        panelText = "Using both of your hands, grab this panel by airtapping with both of your hands on either side. " +
-            "Move both hands together until the panel is in the desired position. Release both hands once desired target is reached.";
+        panelText = "Grab this panel by airtapping on either side using both of your hands. " +
+            "Move both hands together until the panel is overlayed on the target panel. Release both hands once light turns green.";
         
         startingPoint = GameObject.Find("TranslateStart").GetComponent<Transform>();
         targetPoint = GameObject.Find("TranslateTarget").GetComponent<Transform>();

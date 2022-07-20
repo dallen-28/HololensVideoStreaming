@@ -40,12 +40,6 @@ public abstract class Level
     public abstract void SetManipulationType(GameObject movingPanel);
 
 
-    // Updates the target transform based on the scene anchor point
-    public void UpdateTargetTransform(Vector3 pos, Quaternion rot)
-    {
-        targetPoint.SetPositionAndRotation(pos, rot);
-    }
-
     // Foramts the panel text so the title is in bold
     public string FormattedText()
     {
