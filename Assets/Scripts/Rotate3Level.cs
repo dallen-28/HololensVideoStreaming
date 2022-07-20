@@ -35,6 +35,8 @@ public class Rotate3Level : Level
         movingPanel.GetComponent<ObjectManipulator>().enabled = true;
         movingPanel.GetComponent<BoundsControl>().enabled = true;
 
+        movingPanel.GetComponent<ObjectManipulator>().ManipulationType = ManipulationHandFlags.TwoHanded;
+
         // Disable move constraint
         movingPanel.GetComponent<MoveAxisConstraint>().enabled = false;
 

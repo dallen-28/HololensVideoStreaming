@@ -24,6 +24,11 @@ public abstract class Level
 
     public abstract void SetManipulationType(GameObject movingPanel);
 
+    public void UpdateTargetTransform(Vector3 pos, Quaternion rot)
+    {
+        targetPoint.SetPositionAndRotation(pos, rot);
+    }
+
     public string FormattedText()
     {
         return "<size=42><b>" + titleText + "</b></size>\n\n" + panelText;

@@ -3,6 +3,7 @@ using Microsoft.MixedReality.Toolkit.UI.BoundsControl;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Microsoft.MixedReality.Toolkit.Utilities;
 
 public class TranslateLevel : Level
 {
@@ -33,6 +34,8 @@ public class TranslateLevel : Level
     {
         movingPanel.GetComponent<ObjectManipulator>().enabled = true;
         movingPanel.GetComponent<BoundsControl>().enabled = true;
+
+        movingPanel.GetComponent<ObjectManipulator>().ManipulationType = ManipulationHandFlags.TwoHanded;
 
         // Disable move constraint
         movingPanel.GetComponent<MoveAxisConstraint>().enabled = false;

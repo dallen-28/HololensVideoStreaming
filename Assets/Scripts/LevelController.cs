@@ -11,6 +11,7 @@ public class LevelController : MonoBehaviour
     public GameObject movingPanel;
     public GameObject targetPanel;
     public GameObject lightBulb;
+    public GameObject mainCamera;
 
     Level currentLevel;
     Level startLevel;
@@ -22,6 +23,8 @@ public class LevelController : MonoBehaviour
     Level finalLevel;
     Level endLevel;
     Queue<Level> levelQueue;
+
+    Matrix4x4 anchorPos;
 
     bool pauseTrigger;
     bool manipulationActive;
@@ -48,7 +51,7 @@ public class LevelController : MonoBehaviour
         endLevel = new EndLevel();
 
         levelQueue.Enqueue(startLevel);
-        levelQueue.Enqueue(translateLevel);
+        //levelQueue.Enqueue(translateLevel);
         levelQueue.Enqueue(scaleLevel);
         levelQueue.Enqueue(rotate1Level);
         levelQueue.Enqueue(rotate2Level);
@@ -72,6 +75,7 @@ public class LevelController : MonoBehaviour
         lightBulb.SetActive(false);
 
         currentLevel = levelQueue.Dequeue();
+        //currentLevel = scaleLevel;
         //currentLevel = finalLevel;
             
 
@@ -93,13 +97,20 @@ public class LevelController : MonoBehaviour
 
         currentLevel.SetManipulationType(movingPanel);
 
+    
+
+        Matrix4x4 localMovingPanelPos = anchorPos * currentLevel.startingPoint.localToWorldMatrix;
+        Matrix4x4 localTargetPanelPos = anchorPos * currentLevel.targetPoint.localToWorldMatrix;
+
         // Set moving panel transform
-        movingPanel.transform.SetPositionAndRotation(currentLevel.startingPoint.position, currentLevel.startingPoint.rotation);
+        movingPanel.transform.SetPositionAndRotation((Vector3)localMovingPanelPos.GetColumn(3), localMovingPanelPos.rotation);
         movingPanel.transform.localScale = currentLevel.startingPoint.localScale;
 
         // Set target panel transform
-        targetPanel.transform.SetPositionAndRotation(currentLevel.targetPoint.position, currentLevel.targetPoint.rotation);
+        targetPanel.transform.SetPositionAndRotation((Vector3)localTargetPanelPos.GetColumn(3), localTargetPanelPos.rotation);
         targetPanel.transform.localScale = currentLevel.targetPoint.localScale;
+
+        currentLevel.UpdateTargetTransform((Vector3)localTargetPanelPos.GetColumn(3), localTargetPanelPos.rotation);
 
         // Set lightbulb colour to red
         lightBulb.GetComponent<MeshRenderer>().material.color = Color.red;
@@ -121,6 +132,22 @@ public class LevelController : MonoBehaviour
         // Synchronize level state with moving panel transform
         currentLevel.currentPoint.SetPositionAndRotation(movingPanel.transform.position, movingPanel.transform.rotation);
         currentLevel.currentPoint.localScale = movingPanel.transform.localScale;
+
+        // If starting level look at 
+        if(currentLevel.levelNumber == 1)
+        {
+            //Debug.Log(movingPanel.transform.position.ToString());
+            Vector3 panelOffset = new Vector3(0, 0, 0.7f);
+            Vector3 buttonOffset = new Vector3(0.26f, -0.17f, 0.7f);
+            Vector3 newPanelPos = mainCamera.transform.localToWorldMatrix.MultiplyPoint(panelOffset);
+            Vector3 newButtonPos = mainCamera.transform.localToWorldMatrix.MultiplyPoint(buttonOffset);
+            Quaternion newRot = mainCamera.transform.rotation;
+
+            movingPanel.transform.SetPositionAndRotation(newPanelPos, newRot);
+            currentLevel.nextButton.transform.SetPositionAndRotation(newButtonPos, newRot);
+            //movingPanel.transform.LookAt(new Vector3(0,0,0));
+        }
+
 
         // If panel overlayed set lightbulb colour to green
         if (currentLevel.CheckForCompletion())
@@ -155,11 +182,16 @@ public class LevelController : MonoBehaviour
 
     public void OnClick()
     {
+        anchorPos = mainCamera.transform.localToWorldMatrix;
+
+        GameObject.Find("AnchorOffset").transform.position = mainCamera.transform.position;
+        GameObject.Find("AnchorOffset").transform.rotation = mainCamera.transform.rotation;
+
         Destroy(currentLevel.nextButton);
         targetPanel.SetActive(true);
         lightBulb.SetActive(true);
         //currentLevel.nextButton.SetActive(false);
-        currentLevel = new TranslateLevel();
+        currentLevel = levelQueue.Dequeue();
         SetLevelParameters();
 
         startTime = Time.time;
