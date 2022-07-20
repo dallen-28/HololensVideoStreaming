@@ -51,9 +51,9 @@ public class LevelController : MonoBehaviour
     void Start()
     {
 
-        panelOffset = new Vector3(0, 0, 1.5f);
-        buttonOffset = new Vector3(0.26f, -0.17f, 1.5f);
-        targetPanelOffset = new Vector3(-1.3f, 0, 1.5f);
+        //panelOffset = new Vector3(0, 0, 1.5f);
+        //buttonOffset = new Vector3(0.26f, -0.17f, 1.5f);
+        //targetPanelOffset = new Vector3(-1.3f, 0, 1.5f);
 
         // Create level queue
         levelQueue = new Queue<Level>();
@@ -109,6 +109,7 @@ public class LevelController : MonoBehaviour
         {
             endTime = Time.time - startTime;
             movingPanel.GetComponentInChildren<TextMeshProUGUI>().SetText(currentLevel.FormattedText() + GetFormattedTime(endTime));
+            targetPanel.SetActive(false);
         }
         else
         {
@@ -148,28 +149,10 @@ public class LevelController : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {
-       
-        // TODO: 
-        // If starting level look at 
-        if(currentLevel.levelNumber == Level.LevelNumber.Start && !anchorSet)
-        {
-            Vector3 newPanelPos = Camera.main.transform.localToWorldMatrix.MultiplyPoint(panelOffset);
-            Vector3 newTargetPanelPos = Camera.main.transform.localToWorldMatrix.MultiplyPoint(targetPanelOffset);
-            Vector3 newButtonPos = Camera.main.transform.localToWorldMatrix.MultiplyPoint(buttonOffset);
-            Quaternion newRot = Camera.main.transform.rotation;
-
-            movingPanel.transform.SetPositionAndRotation(newPanelPos, newRot);
-            targetPanel.transform.SetPositionAndRotation(newTargetPanelPos, newRot);
-            currentLevel.nextButton.transform.SetPositionAndRotation(newButtonPos, newRot);
-            //movingPanel.transform.LookAt(new Vector3(0,0,0));
-        }
-        else
-        {
-            // Synchronize level state with moving panel transform
-            currentLevel.currentPoint.SetPositionAndRotation(movingPanel.transform.position, movingPanel.transform.rotation);
-            currentLevel.currentPoint.localScale = movingPanel.transform.localScale;
-        }
+    {       
+        // Synchronize level state with moving panel transform
+        currentLevel.currentPoint.SetPositionAndRotation(movingPanel.transform.position, movingPanel.transform.rotation);
+        currentLevel.currentPoint.localScale = movingPanel.transform.localScale;
 
 
         // If panel overlayed set lightbulb colour to green
@@ -238,8 +221,5 @@ public class LevelController : MonoBehaviour
             buttonClickCounter++;
             anchorSet = true;
         }
-   
-
-
     }
 }
