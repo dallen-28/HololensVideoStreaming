@@ -10,7 +10,7 @@ public class Rotate2Level : Level
     public Rotate2Level()
     {
         titleText = "Rotate - Z Axis";
-        panelText = "Air tap this panel on either side using both of your hands. Now move your left hand up and right hand down " +
+        panelText = "Grab this panel on either side. Now move your left hand up and right hand down " +
             "to rotate this panel about the Z axis. Use this technique to overlay this panel on the one to the left. ";
 
         startingPoint = GameObject.Find("Rotate2Start").GetComponent<Transform>();
@@ -44,5 +44,6 @@ public class Rotate2Level : Level
 
         // Disable rotation Y and X axis constraint
         movingPanel.GetComponent<RotationAxisConstraint>().ConstraintOnRotation = AxisFlags.YAxis| AxisFlags.XAxis;
+
     }
 }

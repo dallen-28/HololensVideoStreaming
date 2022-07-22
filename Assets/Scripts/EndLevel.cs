@@ -14,6 +14,8 @@ public class EndLevel : Level
         startingPoint = GameObject.Find("EndStart").GetComponent<Transform>();
         targetPoint = GameObject.Find("FinalTarget").GetComponent<Transform>();
 
+        currentPoint = startingPoint;
+
         levelNumber = LevelNumber.End;
 
         //Debug.Log("Total time: ");
@@ -27,7 +29,8 @@ public class EndLevel : Level
     public override void SetManipulationType(GameObject movingPanel)
     {
         movingPanel.GetComponent<ObjectManipulator>().enabled = false;
-        movingPanel.GetComponent<BoundsControl>().enabled = false;
+        //movingPanel.GetComponent<BoundsControl>().enabled = false;
+
     }
     //public override string FormattedText(float time)
     //{

@@ -5,6 +5,7 @@ using TMPro;
 using Microsoft.MixedReality.Toolkit.UI;
 using Microsoft.MixedReality.Toolkit.UI.BoundsControl;
 using System;
+using UnityEngine.UI;
 
 public class LevelController : MonoBehaviour
 {
@@ -13,6 +14,7 @@ public class LevelController : MonoBehaviour
     public GameObject movingPanel;
     public GameObject targetPanel;
     public GameObject lightBulb;
+    public GameObject coordinateSystem;
 
     // Starting level
     StartingLevel startLevel;
@@ -24,6 +26,7 @@ public class LevelController : MonoBehaviour
     Level rotate1Level;
     Level rotate2Level;
     Level rotate3Level;
+    Level rotate4Level;
     Level finalLevel;
     Level endLevel;
     Queue<Level> levelQueue;
@@ -51,6 +54,7 @@ public class LevelController : MonoBehaviour
         rotate1Level = new Rotate1Level();
         rotate2Level = new Rotate2Level();
         rotate3Level = new Rotate3Level();
+        rotate4Level = new Rotate4Level();
         finalLevel = new FinalLevel();
         endLevel = new EndLevel();
 
@@ -60,6 +64,7 @@ public class LevelController : MonoBehaviour
         levelQueue.Enqueue(rotate1Level);
         levelQueue.Enqueue(rotate2Level);
         levelQueue.Enqueue(rotate3Level);
+        levelQueue.Enqueue(rotate4Level);
         levelQueue.Enqueue(finalLevel);
         levelQueue.Enqueue(endLevel);
         
@@ -74,6 +79,8 @@ public class LevelController : MonoBehaviour
         startLevel.SetActivePanels(targetPanel, lightBulb);
         startLevel.nextButton.SetActive(true);
 
+        //GameObject.Find("CoordinateSystem").GetComponent<Image>().enabled = false;
+
         //movingPanel.GetComponentInChildren<TextMeshProUGUI>().SetText(startLevel.panelText);
 
         currentLevel = startLevel;
@@ -87,6 +94,8 @@ public class LevelController : MonoBehaviour
         {
             endTime = Time.time - startTime;
             movingPanel.GetComponentInChildren<TextMeshProUGUI>().SetText(currentLevel.FormattedText() + GetFormattedTime(endTime));
+            targetPanel.SetActive(false);
+            lightBulb.SetActive(false);
         }
         else
         {
@@ -106,6 +115,7 @@ public class LevelController : MonoBehaviour
 
         // Set lightbulb colour to red
         lightBulb.GetComponent<MeshRenderer>().material.color = Color.red;
+        targetPanel.GetComponent<MeshRenderer>().material.color = Color.white;
 
     }
     string GetFormattedTime(float seconds)
@@ -130,10 +140,13 @@ public class LevelController : MonoBehaviour
         {
 
             lightBulb.GetComponent<MeshRenderer>().material.color = Color.green;
+            targetPanel.GetComponent<MeshRenderer>().material.color = Color.green;
 
             // If panel overlayed and manipulation ended move to next level
             if (!manipulationActive)
             {
+                this.GetComponent<AudioSource>().time = 0.5f;
+                this.GetComponent<AudioSource>().Play();
                 currentLevel = levelQueue.Dequeue();
                 SetLevelParameters();
             }
@@ -142,6 +155,7 @@ public class LevelController : MonoBehaviour
         else
         {
             lightBulb.GetComponent<MeshRenderer>().material.color = Color.red;
+            targetPanel.GetComponent<MeshRenderer>().material.color = Color.white;
         }
 
         //Debug.Log(manipulationActive);

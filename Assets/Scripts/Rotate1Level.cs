@@ -4,6 +4,7 @@ using UnityEngine;
 using Microsoft.MixedReality.Toolkit.UI;
 using Microsoft.MixedReality.Toolkit.Utilities;
 using Microsoft.MixedReality.Toolkit.UI.BoundsControl;
+using UnityEngine.UI;
 
 public class Rotate1Level : Level
 {
@@ -11,7 +12,7 @@ public class Rotate1Level : Level
     public Rotate1Level()
     {
         titleText = "Rotate - Y Axis";
-        panelText = "Air tap this panel on either side using both of your hands. Now push and pull with your right and left hands " +
+        panelText = "Grab this panel on either side. Now push and pull with your right and left hands " +
             "to rotate this panel about the y axis. Use this technique to overlay this panel on the one to the left. ";
 
         startingPoint = GameObject.Find("Rotate1Start").GetComponent<Transform>();
@@ -46,5 +47,7 @@ public class Rotate1Level : Level
 
         // Disable rotation X and Z axes constraint
         movingPanel.GetComponent<RotationAxisConstraint>().ConstraintOnRotation = AxisFlags.XAxis | AxisFlags.ZAxis;
+
+        GameObject.Find("CoordinateSystem").GetComponent<Image>().enabled = true;
     }
 }

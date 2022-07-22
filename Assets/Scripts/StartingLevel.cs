@@ -48,7 +48,7 @@ public class StartingLevel : Level
 
     public void SetActivePanels(GameObject targetPanel, GameObject lightbulb)
     {
-        targetPanel.SetActive(true);
+        targetPanel.SetActive(false);
         lightbulb.SetActive(false);
     }
 

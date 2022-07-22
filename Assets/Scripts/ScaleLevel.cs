@@ -10,8 +10,8 @@ public class ScaleLevel : Level
     public ScaleLevel()
     {
         titleText = "Scale";
-        panelText = "Using both of your hands, grab this panel by airtapping with both of your hands at any two points. " +
-            "Move both hands away from each other until the panel is in the desired position. Release both hands once desired target is reached.";
+        panelText = "Grab this panel on either side. Move both hands away from each other until " +
+            "the panel is the desired size, and then translate it to overlay it with the panel on the left.";
 
         startingPoint = GameObject.Find("ScaleStart").GetComponent<Transform>();
         targetPoint = GameObject.Find("ScaleTarget").GetComponent<Transform>();

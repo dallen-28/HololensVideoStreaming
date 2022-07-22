@@ -32,9 +32,9 @@ public class FinalLevel : Level
     public override void SetManipulationType(GameObject movingPanel)
     {
         movingPanel.GetComponent<ObjectManipulator>().enabled = true;
-        movingPanel.GetComponent<BoundsControl>().enabled = true;
+        //movingPanel.GetComponent<BoundsControl>().enabled = true;
 
-        movingPanel.GetComponent<ObjectManipulator>().ManipulationType = ManipulationHandFlags.TwoHanded;
+        movingPanel.GetComponent<ObjectManipulator>().ManipulationType = ManipulationHandFlags.OneHanded | ManipulationHandFlags.TwoHanded;
 
         // Disable move constraint
         movingPanel.GetComponent<MoveAxisConstraint>().enabled = false;
@@ -44,5 +44,6 @@ public class FinalLevel : Level
 
         // Disable Z axis rotation constraint
         movingPanel.GetComponent<RotationAxisConstraint>().enabled = false;
+
     }
 }
