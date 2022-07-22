@@ -3,8 +3,9 @@ using UnityEngine;
 
 public class UpdateTexture : MonoBehaviour
 {
+    // Scale factor in metres 
+    const float scaleFactor = 0.4f;
 
-    WebCamDevice webCam;
     WebCamTexture webCamTexture;
     Texture2D currentTexture;
     MeshRenderer meshRenderer;
@@ -24,14 +25,17 @@ public class UpdateTexture : MonoBehaviour
         meshRenderer = this.GetComponent<MeshRenderer>();
 
         UpdateAspectRatio(width, height);
+
+        webCamTexture.Play();
+        //meshRenderer.material.mainTexture = GetTexture2DFromWebcamTexture(this.webCamTexture);
+
+
+        currentTexture = new Texture2D(webCamTexture.width, webCamTexture.height);
     }
     public void UpdateAspectRatio(int width, int height)
     {
         float aspectRatio = (float)height / (float)width;
-        this.transform.localScale = new Vector3(1, aspectRatio, 1);
-
-        //OnResize();
-
+        this.transform.localScale = new Vector3(scaleFactor, aspectRatio*scaleFactor, 0.01f);
     }
     public void OnResize()
     {
@@ -45,7 +49,16 @@ public class UpdateTexture : MonoBehaviour
     void Update()
     {
         //webCamTexture.Play();
-        //meshRenderer.material.mainTexture = GetTexture2DFromWebcamTexture(this.webCamTexture);
+
+        currentTexture.SetPixels(webCamTexture.GetPixels());
+        currentTexture.Apply();
+
+        //webCamTexture.
+        //currentTexture = GetTexture2DFromWebcamTexture(this.webCamTexture);
+        //mainTexture = currentTexture;
+        //Destroy(currentTexture);
+        meshRenderer.material.mainTexture = currentTexture;
+        //webCamTexture.Stop();
     }
     public Texture2D GetTexture2DFromWebcamTexture(WebCamTexture webCamTexture)
     {

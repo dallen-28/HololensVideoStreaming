@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using Microsoft.MixedReality.Toolkit.UI;
 using Microsoft.MixedReality.Toolkit.UI.BoundsControl;
+using TMPro;
 
 public class ButtonPressHandler : MonoBehaviour
 {
     public GameObject virtualDisplay;
+    public GameObject lockButton;
 
     ObjectManipulator objectManipulator;
     BoundsControl boundsControl;
@@ -29,6 +31,7 @@ public class ButtonPressHandler : MonoBehaviour
             objectManipulator.enabled = false;
             boundsControl.enabled = false;
             lockToggled = true;
+            lockButton.GetComponentInChildren<TextMeshPro>().SetText("Locked");
             Debug.Log("Lock Toggled");
 
         }
@@ -37,6 +40,7 @@ public class ButtonPressHandler : MonoBehaviour
             objectManipulator.enabled = true;
             boundsControl.enabled = true;
             lockToggled = false;
+            lockButton.GetComponentInChildren<TextMeshPro>().SetText("Unlocked");
             Debug.Log("Lock UnToggled");
         }
 

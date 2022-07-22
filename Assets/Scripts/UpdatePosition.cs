@@ -5,7 +5,8 @@ using UnityEngine;
 
 public class UpdatePosition : MonoBehaviour
 {
-    float offset = 0.6f;
+    float offset = -0.7f;
+    Quaternion rotationOffset;
     public Transform virtualDisplay;
 
     bool lockToggled = false;
@@ -13,7 +14,7 @@ public class UpdatePosition : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        rotationOffset = Quaternion.Euler(0,0,180);
     }
 
     // Update is called once per frame
@@ -23,6 +24,7 @@ public class UpdatePosition : MonoBehaviour
 
         Vector3 localPosition = new Vector3(offset,0,0);
         this.transform.position = virtualDisplay.transform.localToWorldMatrix.MultiplyPoint(localPosition);
-        this.transform.rotation = virtualDisplay.transform.rotation;
+        this.transform.rotation = virtualDisplay.transform.rotation * rotationOffset;
+        //this.transform.rotation = virtualDisplay.transform.rotation;
     }
 }
