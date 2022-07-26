@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -4252,7 +4252,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   handType: 3
   proximityType: 3
-  constraintOnRotation: 5
+  constraintOnRotation: 0
   useLocalSpaceForConstraint: 0
 --- !u!114 &3693158336479168673
 MonoBehaviour:
@@ -4748,9 +4748,9 @@ MonoBehaviour:
   width: 1920
   height: 1080
   offsetX: 300
-  offsetY: 300
-  croppedWidth: 300
-  croppedHeight: 300
+  offsetY: 0
+  croppedWidth: 1320
+  croppedHeight: 1080
   updateTextureFromWebcam: 1
 --- !u!1 &3785638466538800961
 GameObject:
