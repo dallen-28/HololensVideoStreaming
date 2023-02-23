@@ -1,7 +1,7 @@
 # HololensVideoStreaming
 A Unity Windows Mixed Reality project which streams video from various medical devices and displays it through virtual screens. Compatible with the Hololens 2. The repository contains a number of scenes which can deployed as standalone applications to the Hololens 2 or run directly in tbe unity editor.
 
-##Scenes
+## Scenes
 
 ### GestureTutorialScene
 Features a number of levels a user can go through to learn the various hand gesture used for interacting with virtual objects in the Hololens 2.
